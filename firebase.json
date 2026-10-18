@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "target": "main",
+    "site": "homestory-av2",
     "public": "dist",
     "ignore": [
       "firebase.json",
