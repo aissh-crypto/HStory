@@ -245,12 +245,8 @@ export const CaseFilesListView: React.FC<CaseFilesListViewProps> = ({
 
             const calculated = computeCaseFileProgress(c);
             const isArchived = c.status === 'Archived' || c.isArchived === true;
-            const effectiveProgress = isArchived
-              ? c.progressPercent ?? calculated.progressPercent
-              : c.progressPercent && c.progressPercent >= calculated.progressPercent
-              ? c.progressPercent
-              : calculated.progressPercent;
-            const effectiveStatus = isArchived ? 'Parked in History' : c.status || calculated.status;
+            const effectiveProgress = calculated.progressPercent;
+            const effectiveStatus = isArchived ? 'Parked in History' : (calculated.status || c.status);
             const completedModules = calculated.completedCount;
 
             return (

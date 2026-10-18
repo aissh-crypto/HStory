@@ -29,8 +29,8 @@ const DEFAULT_USER_PROFILE: UserProfile = {
   residencyStatus: 'Citizen',
   buyerRole: 'First-time Homebuyer',
   countryPreference: 'Malaysia',
-  monthlyGrossIncome: 18000,
-  existingMonthlyDebts: 2200,
+  monthlyGrossIncome: 0,
+  existingMonthlyDebts: 0,
   defaultCurrency: detectLocationCurrency(),
   currencyPreference: 'AUTO',
 };
@@ -57,12 +57,13 @@ const createNewCaseFile = (property: Property, profile: UserProfile): CaseFile =
       (Math.pow(1 + stressedRate, totalPayments) - 1)
   );
 
-  const dsrPercent = Number(
-    (((monthlyInstallment + profile.existingMonthlyDebts) / (profile.monthlyGrossIncome || 1)) * 100).toFixed(1)
-  );
-  const stressedDsrPercent = Number(
-    (((stressedInstallment + profile.existingMonthlyDebts) / (profile.monthlyGrossIncome || 1)) * 100).toFixed(1)
-  );
+  const hasIncome = Boolean(profile.monthlyGrossIncome && profile.monthlyGrossIncome > 0);
+  const dsrPercent = hasIncome
+    ? Number((((monthlyInstallment + (profile.existingMonthlyDebts || 0)) / profile.monthlyGrossIncome!) * 100).toFixed(1))
+    : 0;
+  const stressedDsrPercent = hasIncome
+    ? Number((((stressedInstallment + (profile.existingMonthlyDebts || 0)) / profile.monthlyGrossIncome!) * 100).toFixed(1))
+    : 0;
 
   return {
     caseId: `case-${property.id}-${Date.now().toString().slice(-4)}`,
@@ -209,10 +210,8 @@ const sanitizeCaseFile = (c: any, fallbackProfile: UserProfile = DEFAULT_USER_PR
   };
 
   const calculated = computeCaseFileProgress({ modules: mergedModules });
-  const effectiveProgressPercent = typeof c?.progressPercent === 'number'
-    ? c.progressPercent
-    : calculated.progressPercent;
-  const effectiveStatus = c?.status || calculated.status;
+  const effectiveProgressPercent = calculated.progressPercent;
+  const effectiveStatus = c?.status === 'Archived' ? 'Archived' : (calculated.status || c?.status);
 
   return {
     ...defaultCase,
@@ -350,8 +349,8 @@ export const App: React.FC = () => {
           residencyStatus: 'Citizen',
           buyerRole: 'First-time Homebuyer',
           countryPreference: isSingapore ? 'Singapore' : 'Malaysia',
-          monthlyGrossIncome: isSingapore ? 9500 : 18000,
-          existingMonthlyDebts: isSingapore ? 1200 : 2200,
+          monthlyGrossIncome: 0,
+          existingMonthlyDebts: 0,
           defaultCurrency: detectLocationCurrency(),
           currencyPreference: 'AUTO',
         };
@@ -399,8 +398,8 @@ export const App: React.FC = () => {
       residencyStatus: 'Citizen',
       buyerRole: 'First-time Homebuyer',
       countryPreference: isSingapore ? 'Singapore' : 'Malaysia',
-      monthlyGrossIncome: isSingapore ? 9500 : 18000,
-      existingMonthlyDebts: isSingapore ? 1200 : 2200,
+      monthlyGrossIncome: 0,
+      existingMonthlyDebts: 0,
       defaultCurrency: detectLocationCurrency(),
       currencyPreference: 'AUTO',
     };
@@ -1026,7 +1025,7 @@ export const App: React.FC = () => {
     const updatedCase: CaseFile = {
       ...targetCase,
       status: calculated.status,
-      progressPercent: Math.max(calculated.progressPercent, 20),
+      progressPercent: calculated.progressPercent,
       modules: updatedModules,
     };
 

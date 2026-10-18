@@ -45,8 +45,8 @@ export const AccountScreen: React.FC<AccountScreenProps> = ({
   const [currencyPreference, setCurrencyPreference] = useState<'AUTO' | 'MYR' | 'SGD'>(
     (userProfile.currencyPreference as any) || (userProfile.defaultCurrency as any) || 'AUTO'
   );
-  const [monthlyIncome, setMonthlyIncome] = useState(userProfile.monthlyGrossIncome || 18000);
-  const [monthlyDebts, setMonthlyDebts] = useState(userProfile.existingMonthlyDebts || 2200);
+  const [monthlyIncome, setMonthlyIncome] = useState(userProfile.monthlyGrossIncome || 0);
+  const [monthlyDebts, setMonthlyDebts] = useState(userProfile.existingMonthlyDebts || 0);
   const [incomeError, setIncomeError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
@@ -62,8 +62,8 @@ export const AccountScreen: React.FC<AccountScreenProps> = ({
     setResidencyStatus(userProfile.residencyStatus || 'Citizen');
     setBuyerRole(userProfile.buyerRole || 'First-time Homebuyer');
     setCountryPreference(userProfile.countryPreference || 'Malaysia');
-    setMonthlyIncome(userProfile.monthlyGrossIncome || 18000);
-    setMonthlyDebts(userProfile.existingMonthlyDebts || 2200);
+    setMonthlyIncome(userProfile.monthlyGrossIncome || 0);
+    setMonthlyDebts(userProfile.existingMonthlyDebts || 0);
   }, [userProfile, currentUser]);
 
   const detectedCurrency = detectLocationCurrency();
@@ -72,10 +72,6 @@ export const AccountScreen: React.FC<AccountScreenProps> = ({
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    if (monthlyIncome <= 0 || isNaN(monthlyIncome)) {
-      setIncomeError('Gross monthly income cannot be 0. Bank underwriting requires a valid salary.');
-      return;
-    }
     setIncomeError(null);
     const updated: UserProfile = {
       ...userProfile,
@@ -84,8 +80,8 @@ export const AccountScreen: React.FC<AccountScreenProps> = ({
       residencyStatus,
       buyerRole,
       countryPreference,
-      monthlyGrossIncome: monthlyIncome,
-      existingMonthlyDebts: Math.max(0, monthlyDebts),
+      monthlyGrossIncome: Math.max(0, Number(monthlyIncome) || 0),
+      existingMonthlyDebts: Math.max(0, Number(monthlyDebts) || 0),
       currencyPreference,
       defaultCurrency: effectiveCurrency,
     };
@@ -413,71 +409,65 @@ export const AccountScreen: React.FC<AccountScreenProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block font-label text-[10px] text-[#5B6478] mb-1.5 font-bold">
-                GROSS MONTHLY HOUSEHOLD INCOME ({countryPreference === 'Singapore' ? 'SGD' : 'MYR'}) <span className="text-red-500">*</span>
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block font-label text-[10px] text-[#5B6478] font-bold">
+                  GROSS MONTHLY HOUSEHOLD INCOME ({countryPreference === 'Singapore' ? 'SGD' : 'MYR'})
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const benchmark = countryPreference === 'Singapore' ? 9500 : 18000;
+                    setMonthlyIncome(benchmark);
+                    setIncomeError(null);
+                  }}
+                  className="text-[10px] text-[#C98A3E] hover:underline font-semibold cursor-pointer"
+                >
+                  Fill {countryPreference === 'Singapore' ? 'SGD 9,500' : 'RM 18,000'} benchmark
+                </button>
+              </div>
               <input
                 type="number"
-                min={1}
+                min={0}
                 step={500}
                 value={monthlyIncome > 0 ? monthlyIncome : ''}
                 onChange={(e) => {
                   const val = Number(e.target.value);
-                  setMonthlyIncome(val);
-                  if (val <= 0 || isNaN(val)) {
-                    setIncomeError('Gross monthly income cannot be 0. Bank underwriting requires a valid salary.');
-                  } else {
-                    setIncomeError(null);
-                  }
+                  setMonthlyIncome(val >= 0 ? val : 0);
+                  setIncomeError(null);
                 }}
-                onBlur={() => {
-                  if (monthlyIncome <= 0 || isNaN(monthlyIncome)) {
-                    const benchmark = countryPreference === 'Singapore' ? 9500 : 18000;
-                    setMonthlyIncome(benchmark);
-                    setIncomeError(null);
-                  }
-                }}
-                placeholder="e.g. 18000 (must be > 0)"
-                className={`w-full px-4 py-2.5 text-xs sm:text-sm rounded-xl border ${
-                  incomeError || monthlyIncome <= 0
-                    ? 'border-red-400 bg-red-50 text-red-950 focus:ring-red-500'
-                    : 'border-[#E8E2D6] bg-[#FAF7F0] text-[#1E2A44] focus:ring-[#C98A3E]'
-                } focus:outline-none focus:ring-1 transition-colors`}
+                placeholder={countryPreference === 'Singapore' ? 'e.g. 9500 (or 0)' : 'e.g. 18000 (or 0)'}
+                className="w-full px-4 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E8E2D6] bg-[#FAF7F0] text-[#1E2A44] focus:outline-none focus:ring-1 focus:ring-[#C98A3E] transition-colors"
               />
-              {(incomeError || monthlyIncome <= 0) && (
-                <div className="mt-1.5 p-2 rounded-xl bg-red-50 border border-red-200 text-red-800 text-[11px] flex items-center justify-between gap-1.5 animate-fadeIn">
-                  <div className="flex items-center gap-1">
-                    <AlertTriangle className="w-3.5 h-3.5 text-red-600 shrink-0" />
-                    <span>Income cannot be 0. Bank underwriting requires positive salary.</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const benchmark = countryPreference === 'Singapore' ? 9500 : 18000;
-                      setMonthlyIncome(benchmark);
-                      setIncomeError(null);
-                    }}
-                    className="px-2 py-0.5 rounded bg-red-100 hover:bg-red-200 text-red-900 font-bold text-[10px] whitespace-nowrap cursor-pointer transition-colors"
-                  >
-                    Set to {countryPreference === 'Singapore' ? 'SGD 9,500' : 'RM 18,000'}
-                  </button>
-                </div>
-              )}
+              <p className="mt-1 text-[11px] text-[#5B6478]">
+                Used to calculate real-time Debt Service Ratio (DSR) &amp; stress tests. Leave 0 if you prefer not to disclose.
+              </p>
             </div>
 
             <div>
-              <label className="block font-label text-[10px] text-[#5B6478] mb-1.5 font-bold">
-                EXISTING MONTHLY DEBT COMMITMENTS ({countryPreference === 'Singapore' ? 'SGD' : 'MYR'})
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block font-label text-[10px] text-[#5B6478] font-bold">
+                  EXISTING MONTHLY DEBT COMMITMENTS ({countryPreference === 'Singapore' ? 'SGD' : 'MYR'})
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setMonthlyDebts(countryPreference === 'Singapore' ? 1200 : 2200)}
+                  className="text-[10px] text-[#C98A3E] hover:underline font-semibold cursor-pointer"
+                >
+                  Fill {countryPreference === 'Singapore' ? 'SGD 1,200' : 'RM 2,200'} benchmark
+                </button>
+              </div>
               <input
                 type="number"
                 min={0}
                 step={100}
-                value={monthlyDebts >= 0 ? monthlyDebts : 0}
+                value={monthlyDebts > 0 ? monthlyDebts : ''}
                 onChange={(e) => setMonthlyDebts(Math.max(0, Number(e.target.value)))}
-                placeholder="e.g. 2200 (car loans, credit cards)"
+                placeholder="e.g. 2200 (car loans, credit cards, or 0)"
                 className="w-full px-4 py-2.5 text-xs sm:text-sm rounded-xl border border-[#E8E2D6] bg-[#FAF7F0] text-[#1E2A44] focus:outline-none focus:ring-1 focus:ring-[#C98A3E]"
               />
+              <p className="mt-1 text-[11px] text-[#5B6478]">
+                Existing hire purchase, credit facility, and personal loan commitments.
+              </p>
             </div>
           </div>
         </div>

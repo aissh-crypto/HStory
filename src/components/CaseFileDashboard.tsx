@@ -1631,21 +1631,38 @@ export const CaseFileDashboard: React.FC<CaseFileDashboardProps> = ({
                   <p className="text-xs text-amber-900/80 max-w-md mx-auto leading-relaxed">
                     Statutory debt service ratio (DSR) bank underwriting and interest shock tests require your actual household income. Please enter your monthly income above to calculate your borrowing limit and stress resilience.
                   </p>
-                  <div className="pt-1 flex justify-center">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const fillSalary = userProfile?.monthlyGrossIncome || 18000;
-                        const fillDebts = debts || userProfile?.existingMonthlyDebts || 2200;
-                        handleUpdateStressField('income', fillSalary);
-                        handleUpdateStressField('debts', fillDebts);
-                      }}
-                      className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs cursor-pointer transition-all"
-                    >
-                      Fill Profile Income ({property.currency} {(userProfile?.monthlyGrossIncome || 18000).toLocaleString()})
-                    </button>
+                  <div className="pt-1 flex flex-wrap justify-center gap-2">
+                    {userProfile?.monthlyGrossIncome && userProfile.monthlyGrossIncome > 0 ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const fillSalary = userProfile.monthlyGrossIncome;
+                          const fillDebts = debts || userProfile.existingMonthlyDebts || 0;
+                          handleUpdateStressField('income', fillSalary);
+                          handleUpdateStressField('debts', fillDebts);
+                        }}
+                        className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs cursor-pointer transition-all"
+                      >
+                        Fill Profile Income ({property.currency} {userProfile.monthlyGrossIncome.toLocaleString()})
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const benchmarkSalary = property.country === 'Singapore' ? 9500 : 18000;
+                          const benchmarkDebts = property.country === 'Singapore' ? 1200 : 2200;
+                          handleUpdateStressField('income', benchmarkSalary);
+                          handleUpdateStressField('debts', benchmarkDebts);
+                        }}
+                        className="px-4 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold text-xs shadow-2xs cursor-pointer transition-all"
+                      >
+                        Fill Typical Benchmark ({property.currency} {property.country === 'Singapore' ? '9,500' : '18,000'})
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
