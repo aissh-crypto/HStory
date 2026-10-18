@@ -1,0 +1,82 @@
+<svg viewBox="0 0 120 120" width="120" height="120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Roof Left: Yellow to Orange Gradient -->
+    <linearGradient id="roof-yellow-orange" x1="10" y1="65" x2="65" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FBBF24" />
+      <stop offset="25%" stop-color="#F59E0B" />
+      <stop offset="70%" stop-color="#F97316" />
+      <stop offset="100%" stop-color="#EF4444" />
+    </linearGradient>
+
+    <!-- Roof Right & Right Wall: Cobalt to Cyan-Blue Gradient -->
+    <linearGradient id="wall-blue" x1="45" y1="20" x2="95" y2="95" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1E40AF" />
+      <stop offset="30%" stop-color="#2563EB" />
+      <stop offset="70%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#60A5FA" />
+    </linearGradient>
+
+    <!-- Left Wall & Floor: Vibrant Emerald to Forest Green Gradient -->
+    <linearGradient id="wall-green" x1="15" y1="60" x2="55" y2="105" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22C55E" />
+      <stop offset="50%" stop-color="#16A34A" />
+      <stop offset="100%" stop-color="#15803D" />
+    </linearGradient>
+
+    <!-- Top-Right AI Sparkle Star: Electric Blue to Magenta-Violet -->
+    <linearGradient id="star-gradient" x1="72" y1="5" x2="105" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="35%" stop-color="#6366F1" />
+      <stop offset="70%" stop-color="#A855F7" />
+      <stop offset="100%" stop-color="#EC4899" />
+    </linearGradient>
+
+    <!-- Window Blue -->
+    <linearGradient id="window-blue" x1="32" y1="55" x2="58" y2="82" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+  </defs>
+
+  <!-- 1. LEFT WALL & BOTTOM FLOOR (Green Ribbon) -->
+  <!-- Starts near lower-left, curves down to bottom-left corner, and folds along the floor -->
+  <path
+    d="M15 62 V88 C15 99 24 105 34 105 H50 C44 105 35 101 27 95 C22 91 21 86 21 78 V62 C21 57 15 57 15 62 Z"
+    fill="url(#wall-green)"
+  />
+  <path
+    d="M15 62 C15 56 25 56 25 62 V85 C25 93 33 97 45 97 H52 C45 102 36 105 28 105 C18 105 15 97 15 88 Z"
+    fill="url(#wall-green)"
+  />
+
+  <!-- 2. RIGHT ROOF & RIGHT WALL (Blue Ribbon) -->
+  <!-- Overlaps at roof peak, slopes down to right shoulder, bends down to right wall -->
+  <path
+    d="M48 30 L74 53 C84 62 89 71 89 82 V94 C89 100 80 102 75 97 C72 94 72 88 72 82 V60 C72 52 68 46 60 39 L46 27 C42 24 45 18 51 21 L78 44 C88 53 94 65 94 78 V88 C94 100 83 108 72 104 C65 101 62 95 62 88 V66 L44 50 L48 30 Z"
+    fill="url(#wall-blue)"
+  />
+  <path
+    d="M48 24 L78 48 C87 56 92 67 92 79 V90 C92 101 82 106 73 101 C68 98 67 92 67 85 V62 C67 55 63 49 56 43 L42 30 C38 27 42 20 48 24 Z"
+    fill="url(#wall-blue)"
+  />
+
+  <!-- 3. LEFT ROOF SLANT (Yellow to Orange Ribbon) -->
+  <!-- Starts at lower-left eave with rounded cap, slopes up to peak overlapping blue ribbon -->
+  <path
+    d="M8 53 C4 48 7 40 14 36 L52 13 C59 9 67 14 65 22 C63 29 57 32 50 36 L19 55 C14 58 9 57 8 53 Z"
+    fill="url(#roof-yellow-orange)"
+  />
+
+  <!-- 4. FOUR CENTER WINDOW PANES (2x2 Grid) -->
+  <rect x="36" y="58" width="10" height="11" rx="3" fill="url(#window-blue)" />
+  <rect x="49" y="58" width="10" height="11" rx="3" fill="url(#window-blue)" />
+  <rect x="36" y="72" width="10" height="11" rx="3" fill="url(#window-blue)" />
+  <rect x="49" y="72" width="10" height="11" rx="3" fill="url(#window-blue)" />
+
+  <!-- 5. TOP-RIGHT AI SPARKLE STAR (Gemini 4-Pointed Star) -->
+  <!-- Positioned at top-right above blue roof slope -->
+  <path
+    d="M88 4 Q88 19 103 19 Q88 19 88 34 Q88 19 73 19 Q88 19 88 4 Z"
+    fill="url(#star-gradient)"
+  />
+</svg>

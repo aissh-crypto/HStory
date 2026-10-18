@@ -1,0 +1,62 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with preference settings and buyer status",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "residencyStatus": { "type": "string", "enum": ["Citizen", "Permanent Resident", "Foreign Buyer"] },
+        "buyerRole": { "type": "string", "enum": ["First-time Homebuyer", "Upgrader", "Property Investor"] },
+        "countryPreference": { "type": "string", "enum": ["Malaysia", "Singapore"] },
+        "monthlyGrossIncome": { "type": "number" },
+        "existingMonthlyDebts": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "email", "displayName", "residencyStatus", "countryPreference"]
+    },
+    "SavedProperty": {
+      "title": "SavedProperty",
+      "description": "Bookmarked property reference for a user",
+      "type": "object",
+      "properties": {
+        "propertyId": { "type": "string", "maxLength": 64 },
+        "savedAt": { "type": "string" }
+      },
+      "required": ["propertyId", "savedAt"]
+    },
+    "CaseFileRecord": {
+      "title": "CaseFileRecord",
+      "description": "Due diligence investigation case file for a property",
+      "type": "object",
+      "properties": {
+        "caseId": { "type": "string", "maxLength": 64 },
+        "propertyId": { "type": "string", "maxLength": 64 },
+        "country": { "type": "string", "enum": ["Malaysia", "Singapore"] },
+        "status": { "type": "string", "enum": ["not_started", "in_progress", "done"] },
+        "modules": { "type": "object" },
+        "verdict": { "type": "object" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["caseId", "propertyId", "country", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Individual user profile, settings and financial presets"
+    },
+    "/users/{userId}/saved/{propertyId}": {
+      "schema": "SavedProperty",
+      "description": "Saved properties bookmarked by user"
+    },
+    "/users/{userId}/caseFiles/{caseId}": {
+      "schema": "CaseFileRecord",
+      "description": "Due diligence case file dossiers owned by the user"
+    }
+  }
+}

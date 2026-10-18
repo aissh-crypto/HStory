@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User Profile Document and all nested subcollections (saved, caseFiles, chats, inspections)
+    match /users/{userId} {
+      allow read, write: if true;
+
+      // Subcollection: Saved Properties
+      match /saved/{propertyId} {
+        allow read, write: if true;
+      }
+
+      // Subcollection: Case Files and their nested chats / media
+      match /caseFiles/{caseId} {
+        allow read, write: if true;
+
+        match /{allChildren=**} {
+          allow read, write: if true;
+        }
+      }
+
+      // Subcollection: Live Camera Inspections
+      match /inspections/{inspectionId} {
+        allow read, write: if true;
+      }
+
+      match /{allChildren=**} {
+        allow read, write: if true;
+      }
+    }
+
+    // Top-Level Case Files Collection (directly visible in Firebase Console root collections column)
+    match /caseFiles/{caseId} {
+      allow read, write: if true;
+
+      match /{allChildren=**} {
+        allow read, write: if true;
+      }
+    }
+
+    // Registered accounts collection (so accounts persist across incognito and devices)
+    match /registeredAccounts/{email} {
+      allow read, write: if true;
+    }
+  }
+}

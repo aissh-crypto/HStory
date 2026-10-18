@@ -1,0 +1,9 @@
+{
+  "name": "Homestory — AI Property Due Diligence Copilot",
+  "description": "An intelligent cross-border property due diligence platform featuring automated stress tests, valuation analysis, developer signal audits, and Gemini-powered synthesis.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
