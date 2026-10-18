@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - main
+permissions:
+  contents: read
+  id-token: write
+  deployments: write
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
@@ -20,6 +24,8 @@ jobs:
 
       - name: Compile Vite Production Build
         run: bun run build
+        env:
+          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
 
       - name: Deploy Live Assets to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -27,4 +33,5 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GEN_LANG_CLIENT_0367700963 }}
           projectId: gen-lang-client-0367700963
+          target: main
           channelId: live
